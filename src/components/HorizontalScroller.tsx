@@ -10,13 +10,13 @@ type props = {
 
 const HorizontalScroller: FC<props> = (props) => {
 	return (
-		<>
+		<div className="relative">
 			<h1 className="text-slate-900 font-bold text-2xl mb-4">{props.title}</h1>
 			<div
 				className="flex space-x-1 md:space-x-4 overflow-x-auto snap-x scrollbar mb-8 pb-4
     scrollbar-thumb-gray-200
     scrollbar-thumb-rounded-lg
-    scrollbar-thin"
+    scrollbar-thin relative -mx-4 md:-mx-0 "
 			>
 				{props.products.map((item, index) => (
 					<Link key={index} to={`/product/${item.id}`} className="snap-start">
@@ -38,7 +38,8 @@ const HorizontalScroller: FC<props> = (props) => {
 					</Link>
 				))}
 			</div>
-		</>
+			{/* <div className="absolute h-full w-8 right-0 top-0 from-white to-transparent bg-gradient-to-l"></div> */}
+		</div>
 	)
 }
 
