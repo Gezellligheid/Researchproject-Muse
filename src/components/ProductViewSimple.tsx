@@ -5,14 +5,14 @@ import StarRating from './StarRating'
 import VRButton from './VRButton'
 
 type props = {
-	product: Product
+	toShowProduct: Product
 }
 
 const ProductViewSimple: FC<props> = (props: any) => {
 	const [selectedImage, setSelectedImage] = useState('')
 
 	useEffect(() => {
-		setSelectedImage(props.product.imageUrl)
+		setSelectedImage(props.toShowProduct.imageUrl)
 	}, [])
 
 	const changeImage = (imageUrl: string) => {
@@ -36,53 +36,56 @@ const ProductViewSimple: FC<props> = (props: any) => {
 				>
 					<button
 						onClick={() => {
-							changeImage(props.product.imageUrl)
+							changeImage(props.toShowProduct.imageUrl)
 						}}
 						className=" overflow-hidden rounded-lg w-24 h-24 tems-center justify-center"
 					>
 						<img
 							className=" object-cover "
-							src={props.product.imageUrl}
+							src={props.toShowProduct.imageUrl}
 							alt=""
 						/>
 					</button>
-					{props.product.extraImages &&
-						props.product.extraImages.map((imageUrl: string) => (
-							<button
-								onClick={() => {
-									changeImage(imageUrl)
-								}}
-								className=" overflow-hidden  rounded-lg w-24 h-24   items-center justify-center"
-							>
-								<img
-									className=" object-cover h-full w-full"
-									src={imageUrl}
-									alt=""
-								/>
-							</button>
-						))}
+					{props.toShowProduct.extraImages &&
+						props.toShowProduct.extraImages.map(
+							(imageUrl: string, index: any) => (
+								<button
+									key={index}
+									onClick={() => {
+										changeImage(imageUrl)
+									}}
+									className=" overflow-hidden  rounded-lg w-24 h-24   items-center justify-center"
+								>
+									<img
+										className=" object-cover h-full w-full"
+										src={imageUrl}
+										alt=""
+									/>
+								</button>
+							)
+						)}
 				</div>
 			</div>
 			<div className="flex flex-col justify-center">
-				<h1 className="font-semibold mb-6">{props.product.name}</h1>
+				<h1 className="font-semibold mb-6">{props.toShowProduct.name}</h1>
 				<h1 className="text-2xl font-bold">
-					€{props.product.price.toFixed(2)}
+					€{props.toShowProduct.price.toFixed(2)}
 				</h1>
 				<StarRating />
 				<p className="mt-12 font-semibold text-slate-600 mb-8">
-					{props.product.description}
+					{props.toShowProduct.description}
 				</p>
 				<button className="md:w-max mb-2 bg-sky-500 text-white font-bold py-2 px-4 rounded-full hover:bg-sky-600 focus:ring focus:ring-sky-500 focus:ring-opacity-25">
 					Add to cart
 				</button>
 				<div>
-					{props.product.modelUrl && (
+					{props.toShowProduct.modelUrl && (
 						<div className="flex md:space-x-2 flex-col md:flex-row space-y-4 md:space-y-0">
 							<ARButton
-								modelUrl={window.location.origin + props.product.modelUrl}
+								modelUrl={window.location.origin + props.toShowProduct.modelUrl}
 							/>
 							<VRButton
-								modelUrl={window.location.origin + props.product.modelUrl}
+								modelUrl={window.location.origin + props.toShowProduct.modelUrl}
 							/>
 						</div>
 					)}

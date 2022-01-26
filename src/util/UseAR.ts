@@ -11,6 +11,7 @@ import {
 	Vector3,
 	WebGLRenderer
 } from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 //@ts-ignore
 // let scene: any = {};
@@ -22,6 +23,7 @@ export const useAR = (() => {
 	let reticle: any
 	let hitTestSource: any = null
 	let hitTestSourceRequested = false
+	let currentModel
 
 	const isARSupported = (): Promise<boolean> => {
 		return new Promise((resolve, reject) => {
@@ -57,6 +59,18 @@ export const useAR = (() => {
 			})
 			initLights(scene)
 		}
+	}
+
+	const replaceModel = (model: any) => {}
+
+	const loadModel = (modelLocation: string) => {
+		const loader = new GLTFLoader()
+		return new Promise((resolve, reject) => {
+			loader.load(modelLocation, (gltf: any) => {
+				const newModel = gltf.scene.children[0]
+				resolve(newModel)
+			})
+		})
 	}
 
 	const initScene = (model: Object3D) => {
