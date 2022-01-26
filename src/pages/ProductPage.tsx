@@ -34,7 +34,7 @@ const ProductPage = () => {
 			setSelectedProduct(pr)
 			setLoading(false)
 		}
-	}, [])
+	}, [id])
 
 	return (
 		<div>

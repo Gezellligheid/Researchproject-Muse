@@ -3,9 +3,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useAR } from '../util/UseAR'
 import { Dialog, Transition } from '@headlessui/react'
 import QRCode from 'react-qr-code'
+import { useNavigate } from 'react-router-dom'
+import { useCart } from 'react-use-cart'
+import { Product } from '../entities/Product'
 
 type props = {
 	modelUrl: string
+	product: Product
 }
 
 const ARButton: FC<props> = (props: any) => {
@@ -16,7 +20,15 @@ const ARButton: FC<props> = (props: any) => {
 	const [container, setContainer] = useState<HTMLDivElement>()
 	const [renderer, setRenderer] = useState<THREE.WebGLRenderer>()
 	const [dialogOpen, setDialogOpen] = useState(false)
-
+	const {
+		isEmpty,
+		totalUniqueItems,
+		items,
+		updateItemQuantity,
+		removeItem,
+		addItem,
+		inCart
+	} = useCart()
 	// let overlay: any = undefined;
 	const overlay = useRef<HTMLDivElement>(null)
 	const {
@@ -26,6 +38,7 @@ const ARButton: FC<props> = (props: any) => {
 		getARContainer,
 		clearChildren
 	} = useAR
+	let navigate = useNavigate()
 
 	useEffect(() => {
 		;(async () => {
@@ -92,6 +105,19 @@ const ARButton: FC<props> = (props: any) => {
 	const closeSession = () => {
 		currentSession.end()
 		setOverlayShown(false)
+	}
+
+	const buh = () => {
+		console.log('boe')
+
+		currentSession.end().then(() => {
+			setOverlayShown(false)
+			navigate('/cart')
+		})
+	}
+
+	const addToCart = () => {
+		addItem(props.product)
 	}
 
 	return (
@@ -185,7 +211,7 @@ const ARButton: FC<props> = (props: any) => {
 					<h1>View in AR</h1>
 				</button>
 
-				<div ref={overlay} className="hidden pointer-events-none">
+				<div ref={overlay} className="hidden pointer-events-none min-h-screen">
 					<button
 						className="text-white absolute right-8 top-8 pointer-events-auto"
 						onClick={closeSession}
@@ -203,6 +229,39 @@ const ARButton: FC<props> = (props: any) => {
 							/>
 						</svg>
 					</button>
+					<div className="absolute pointer-events-auto top-4 left-4">
+						<button
+							onClick={buh}
+							className="  relative w-10 h-10 flex items-center justify-center text-white bg-sky-500 p-2 rounded-full"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-5 w-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+								/>
+							</svg>
+						</button>
+						<span className="absolute -top-1 -right-1 bg-white w-5 h-5 flex items-center justify-center rounded-full bg-opacity-75 text-slate-900 font-semibold text-sm">
+							{totalUniqueItems}
+						</span>
+					</div>
+
+					<div className="flex pointer-events-auto w-full justify-center absolute bottom-4">
+						<button
+							onClick={addToCart}
+							className=" bg-sky-500  text-white font-semibold px-4 py-2 rounded-full focus:ring focus:ring-sky-500 focus:ring-opacity-30"
+						>
+							{inCart(props.product.id) ? 'Already in cart' : 'Add to Cart'}
+						</button>
+					</div>
 					{/* <div className="absolute bottom-0 right-0 w-20 h-20 bg-red-500"></div> */}
 				</div>
 			</div>

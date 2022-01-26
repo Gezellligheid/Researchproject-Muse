@@ -17,6 +17,7 @@ const Products = () => {
 	const [bestsellers, setBestsellers] = useState<Product[]>([])
 	const [searchTerm, setSearchTerm] = useState<string>('')
 	const [latestProducts, setLatestProducts] = useState<Product[]>([])
+
 	useEffect(() => {
 		setProducts(
 			backend
@@ -77,7 +78,7 @@ const Products = () => {
 							</svg>
 						</button>
 					</div>
-					<div className="flex space-x-2">
+					<div className=" flex flex-wrap  gap-2">
 						<button
 							onClick={() => {
 								setSelectedCategory('all')
@@ -119,11 +120,15 @@ const Products = () => {
 					</div>
 				)}
 				<main
-					className="grid grid-cols-4 mb-12
+					className="md:grid w-max  mx-auto md:grid-cols-5 mb-12
         "
 				>
 					{products.map((item: Product, index) => (
-						<Link key={index} to={`/product/${item.id}`} className="snap-start">
+						<Link
+							key={index}
+							to={`/product/${item.id}`}
+							className="snap-start w-max"
+						>
 							<div className="w-min hover:bg-slate-100 transition-colors p-2 md:p-4 rounded-lg">
 								{/* product image */}
 								<div className="max-h-[550px] w-48 h-48 overflow-hidden rounded-xl mb-2">

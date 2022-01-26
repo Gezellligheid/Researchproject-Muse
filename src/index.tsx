@@ -5,12 +5,16 @@ import { BrowserRouter } from 'react-router-dom'
 
 import './assets/main.css'
 import Router from './middleware/Router'
+import { UseCartManager } from './backend/cartManager'
+import { CartProvider, useCart } from 'react-use-cart'
 
 ReactDOM.render(
 	<React.StrictMode>
-		<BrowserRouter>
-			<Router />
-		</BrowserRouter>
+		<CartProvider>
+			<BrowserRouter>
+				<Router />
+			</BrowserRouter>
+		</CartProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 )

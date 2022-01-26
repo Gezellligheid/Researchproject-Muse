@@ -1,4 +1,6 @@
 import React, { FC, useEffect, useState } from 'react'
+import { useCart } from 'react-use-cart'
+import { UseCartManager } from '../backend/cartManager'
 import { Product } from '../entities/Product'
 import ARButton from './ARButton'
 import StarRating from './StarRating'
@@ -10,10 +12,19 @@ type props = {
 
 const ProductViewSimple: FC<props> = (props: any) => {
 	const [selectedImage, setSelectedImage] = useState('')
+	const {
+		isEmpty,
+		totalUniqueItems,
+		items,
+		updateItemQuantity,
+		removeItem,
+		addItem,
+		inCart
+	} = useCart()
 
 	useEffect(() => {
 		setSelectedImage(props.toShowProduct.imageUrl)
-	}, [])
+	}, [props.toShowProduct])
 
 	const changeImage = (imageUrl: string) => {
 		setSelectedImage(imageUrl)
@@ -75,13 +86,19 @@ const ProductViewSimple: FC<props> = (props: any) => {
 				<p className="mt-12 font-semibold text-slate-600 mb-8">
 					{props.toShowProduct.description}
 				</p>
-				<button className="md:w-max mb-2 bg-sky-500 text-white font-bold py-2 px-4 rounded-full hover:bg-sky-600 focus:ring focus:ring-sky-500 focus:ring-opacity-25">
-					Add to cart
+				<button
+					onClick={() => {
+						addItem(props.toShowProduct)
+					}}
+					className="md:w-max mb-2 bg-sky-500 text-white font-bold py-2 px-4 rounded-full hover:bg-sky-600 focus:ring focus:ring-sky-500 focus:ring-opacity-25"
+				>
+					{inCart(props.toShowProduct.id) ? 'Already in Cart' : 'Add to Cart'}
 				</button>
 				<div>
 					{props.toShowProduct.modelUrl && (
 						<div className="flex md:space-x-2 flex-col md:flex-row space-y-4 md:space-y-0">
 							<ARButton
+								product={props.toShowProduct}
 								modelUrl={window.location.origin + props.toShowProduct.modelUrl}
 							/>
 							<VRButton
