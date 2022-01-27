@@ -55,13 +55,12 @@ const VRButton: FC<props> = (props: any) => {
 				'layers'
 			)
 			// sessionInit.requiredFeatures.push("hit-test");
-			sessionInit.domOverlay = { root: overlay.current! }
 
 			// Loading the 3D model
 			const loader = new GLTFLoader()
 			loader.load(props.modelUrl, (gltf) => {
 				const mesh = gltf.scene.children[0]
-				createSessionIfSupported(mesh).then((renderer) => {
+				createSessionIfSupported(mesh, overlay.current!).then((renderer) => {
 					setRenderer(renderer)
 					setContainer(getVRContainer())
 				})
@@ -221,7 +220,30 @@ c-66 32 -132 99 -162 165 l-22 47 0 1050 0 1050 25 50 c43 88 135 164 225 186
 					<h1>View in VR</h1>
 				</button>
 
-				<div ref={overlay} className="hidden pointer-events-none">
+				<div
+					ref={overlay}
+					className="bg-slate-800 p-4 w-96 rounded-xl flex justify-end"
+				>
+					<button
+						className="text-white pointer-events-auto"
+						onClick={closeSession}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="h-5 w-5"
+							viewBox="0 0 20 20"
+							fill="currentColor"
+						>
+							<path
+								fillRule="evenodd"
+								d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+								clipRule="evenodd"
+							/>
+						</svg>
+					</button>
+				</div>
+
+				<div className="hidden pointer-events-none">
 					<button
 						className="text-white absolute right-8 top-8 pointer-events-auto"
 						onClick={closeSession}

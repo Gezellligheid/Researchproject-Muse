@@ -21,7 +21,10 @@ import {
 import { create } from 'domain'
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory'
 import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory'
-
+import GUI from 'lil-gui'
+import { HTMLMesh } from 'three/examples/jsm/interactive/HTMLMesh'
+// import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import { InteractiveGroup } from 'three/examples/jsm/interactive/InteractiveGroup'
 //@ts-ignore
 // let scene: any = {};
 export const useVR = (() => {
@@ -38,6 +41,7 @@ export const useVR = (() => {
 	let hand1, hand2
 	const tempMatrix = new Matrix4()
 	let controller1: any, controller2: any
+	let menu: HTMLMesh
 
 	let group: any
 
@@ -77,7 +81,7 @@ export const useVR = (() => {
 		}
 	}
 
-	const initScene = (model: Object3D) => {
+	const initScene = (model: Object3D, overlay: HTMLDivElement) => {
 		const container = document.createElement('div')
 		vrContainer = container
 		container.classList.toggle('hidden')
@@ -183,6 +187,24 @@ export const useVR = (() => {
 		controller2.add(line.clone())
 		raycaster = new Raycaster()
 
+		let inputs = {
+			closeButton: () => {}
+		}
+		let gui = new GUI()
+		gui.add(inputs, 'closeButton').name('Close VR session')
+
+		const g = new InteractiveGroup(x, camera)
+		sc.add(g)
+
+		menu = new HTMLMesh(gui.domElement)
+		menu.position.x = -0.75
+		menu.position.y = camera.position.y
+		menu.position.z = -0.5
+		menu.rotation.y = Math.PI / 4
+		menu.scale.setScalar(2)
+
+		g.add(menu)
+
 		scene = sc
 		// div.current!.appendChild(x.domElement);
 
@@ -193,7 +215,6 @@ export const useVR = (() => {
 
 			if (intersections.length > 0) {
 				const intersection = intersections[0]
-
 				const object = intersection.object
 				;(object as any).material.emissive.b = 1
 				controller.attach(object)
@@ -264,6 +285,23 @@ export const useVR = (() => {
 			intersectObjects(controller1)
 			intersectObjects(controller2)
 			x.render(scene!, camera)
+			// keep menu in fron of the camera also when rotating
+
+			// Get rico of y rotation
+			// let v = new Vector3()
+			// camera.getWorldDirection(v)
+			// v.multiplyScalar(0.5)
+			// v.add(camera.position)
+			// menu.position.set(v.x, v.y, v.z)
+			// menu.rotation.y = camera.rotation.y
+			// menu.rotation.y = 35
+			menu.lookAt(camera.position)
+			// get directional coefficient of camera
+
+			// Set the menu in front of the camera
+			menu.position.y = camera.position.y - 0.5
+			// menu.position.z = camera.position.y
+
 			// moveObject();
 			// console.log("run");
 		})
@@ -272,7 +310,8 @@ export const useVR = (() => {
 	}
 
 	const createSessionIfSupported = (
-		model: THREE.Object3D
+		model: THREE.Object3D,
+		overlay: HTMLDivElement
 	): Promise<THREE.WebGLRenderer> => {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -285,7 +324,7 @@ export const useVR = (() => {
 					// // Get material of the model
 					// let mat = (model as any).material
 					// let mesh = new Mesh(geom, mat)
-					const renderer = initScene(model)
+					const renderer = initScene(model, overlay)
 
 					resolve(renderer)
 				}
