@@ -25,7 +25,7 @@ const ProductPage = () => {
 		console.log(id)
 		const pr = backend.getProductById(id as string)
 		console.log(pr)
-		const products = backend.getTestProducts()
+		const products = backend.getSixRandomProducts()
 		const latest = productStorage.getLatestVisited()
 		setLatestProducts(latest)
 		setProducts(products)

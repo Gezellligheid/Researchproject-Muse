@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from 'react-use-cart'
+import { backend } from '../backend/backend'
 import { UseCartManager } from '../backend/cartManager'
+import { productStorage } from '../backend/productStorage'
+import Footer from '../components/Footer'
+import HorizontalScroller from '../components/HorizontalScroller'
 import NavigationBar from '../components/NavigationBar'
 import PageLayout from '../components/PageLayout'
 import { Product } from '../entities/Product'
 
 const Cart = () => {
 	const [loading, setLoading] = useState(false)
-	const [cart, setCart] = useState<Product[]>([])
+
 	const {
 		isEmpty,
 		totalUniqueItems,
@@ -19,13 +23,24 @@ const Cart = () => {
 		inCart,
 		cartTotal
 	} = useCart()
+	const { getLatestVisited } = productStorage
+	const [latestProducts, setLatestProducts] = useState<Product[]>([])
+	const [bestsellers, setBestsellers] = useState<Product[]>([])
+	useEffect(() => {
+		setLoading(true)
+		const latest = getLatestVisited()
+		const best = backend.getSixRandomProducts()
+		setBestsellers(best)
+		setLatestProducts(latest)
+		setLoading(false)
+	}, [])
 
 	return (
 		<div>
 			<PageLayout>
 				<NavigationBar />
 				{!loading && (
-					<>
+					<div className="mb-16">
 						{items.length > 0 ? (
 							<div className="w-full p-4 rounded-lg border-slate-300 border ">
 								<div className="mb-8 flex justify-between">
@@ -93,6 +108,11 @@ const Cart = () => {
 										</div>
 									))}
 								</div>
+								<div className="flex justify-end mt-4">
+									<button className="bg-sky-500 text-white font-semibold py-2 px-4 rounded-full hover:bg-sky-600 focus:ring focus:ring-sky-500 focus:ring-opacity-30 transition-colors">
+										Checkout
+									</button>
+								</div>
 							</div>
 						) : (
 							<div className="flex flex-col items-center">
@@ -106,9 +126,11 @@ const Cart = () => {
 								</Link>
 							</div>
 						)}
-					</>
+					</div>
 				)}
+				<HorizontalScroller products={latestProducts} title="Last visted" />
 			</PageLayout>
+			<Footer />
 		</div>
 	)
 }

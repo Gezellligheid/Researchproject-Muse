@@ -7,6 +7,7 @@ import { Product } from '../entities/Product'
 function NavigationBar() {
 	const { isEmpty, totalUniqueItems, items, updateItemQuantity, removeItem } =
 		useCart()
+	const [open, setOpen] = useState(false)
 	const [links, setlinks] = useState([
 		{
 			name: 'Home',
@@ -15,16 +16,67 @@ function NavigationBar() {
 		{
 			name: 'Products',
 			path: '/products'
-		},
-		{
-			name: 'Contact',
-			path: '/contact'
 		}
 	])
 	const [cart, setCart] = useState<Product[]>([])
+	const toggleMenu = () => {
+		setOpen(!open)
+		if (open) {
+			document.body.style.overflow = 'auto'
+		} else {
+			document.body.style.overflow = 'hidden'
+		}
+	}
+
+	// reset overflow of body on leave of component
+	useEffect(() => {
+		return () => {
+			document.body.style.overflow = 'auto'
+		}
+	}, [])
 
 	return (
 		<div className="py-6">
+			<aside
+				className={`absolute left-0 top-0 min-h-screen w-full bg-white z-10 transform transition-transform duration-300 ease-in-out ${
+					!open ? '-translate-x-full' : '-translate-x-0'
+				}`}
+			>
+				<div className="flex flex-col p-6">
+					<div className="flex justify-between mb-6">
+						<h1 className="text-lg font-bold text-slate-900">Muse.</h1>
+						<button
+							onClick={() => {
+								toggleMenu()
+							}}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-6 w-6 text-slate-900"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M6 18L18 6M6 6l12 12"
+								/>
+							</svg>
+						</button>
+					</div>
+					{links.map((link, index) => (
+						<Link
+							to={link.path}
+							key={index}
+							className=" py-3 font-semibold text-slate-900 hover:text-slate-600"
+						>
+							{link.name}
+						</Link>
+					))}
+				</div>
+			</aside>
 			<nav className="flex justify-between items-center">
 				<div>
 					<h1 className="font-bold text-gray-900 text-lg">Muse.</h1>
@@ -58,7 +110,12 @@ function NavigationBar() {
 								{totalUniqueItems}
 							</span>
 						</Link>
-						<button className="w-8 h-8 relative flex md:hidden items-center justify-center rounded-full  hover:border-sky-500 hover:ring hover:ring-sky-500 hover:ring-opacity-25 hover:border transition-all">
+						<button
+							onClick={() => {
+								toggleMenu()
+							}}
+							className="w-8 h-8 relative flex md:hidden items-center justify-center rounded-full  hover:border-sky-500 hover:ring hover:ring-sky-500 hover:ring-opacity-25 hover:border transition-all"
+						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-5 w-5"

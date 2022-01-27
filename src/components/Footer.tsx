@@ -19,9 +19,12 @@ const Footer = () => {
 							<Link to="/products" className="text-slate-100">
 								Products
 							</Link>
-							<Link to="/contact" className="text-slate-100">
-								Contact
-							</Link>
+							<a
+								className="text-slate-100 underline"
+								href="mailto://contact@muse.com"
+							>
+								contact@muse.com
+							</a>
 						</div>
 					</div>
 					<div className="w-full flex  pt-6 md:pt-0">

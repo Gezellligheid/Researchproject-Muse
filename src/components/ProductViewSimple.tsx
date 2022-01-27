@@ -88,7 +88,9 @@ const ProductViewSimple: FC<props> = (props: any) => {
 				</p>
 				<button
 					onClick={() => {
-						addItem(props.toShowProduct)
+						if (!inCart(props.toShowProduct.id)) {
+							addItem(props.toShowProduct)
+						}
 					}}
 					className="md:w-max mb-2 bg-sky-500 text-white font-bold py-2 px-4 rounded-full hover:bg-sky-600 focus:ring focus:ring-sky-500 focus:ring-opacity-25"
 				>
