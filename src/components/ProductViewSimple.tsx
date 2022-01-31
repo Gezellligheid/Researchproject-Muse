@@ -43,7 +43,7 @@ const ProductViewSimple: FC<props> = (props: any) => {
 				<div
 					className="md:pr-4 md:-mr-4 max-h-96 pb-4 -mb-4 md:pb-0 md:-pb-0 h-max w-full md:w-max md:h-full grid grid-rows-1 md:grid-rows-none grid-flow-col md:grid-flow-row overflow-x-auto md:overflow-x-auto md:overflow-y-auto md:space-y-4 space-x-4 md:space-x-0 scrollbar-thin scrollbar scrollbar-thumb-gray-200
     scrollbar-thumb-rounded-lg
-    scrollbar-thin relative"
+    scrollbar-thin relative "
 				>
 					<button
 						onClick={() => {
@@ -52,7 +52,7 @@ const ProductViewSimple: FC<props> = (props: any) => {
 						className=" overflow-hidden rounded-lg w-24 h-24 tems-center justify-center"
 					>
 						<img
-							className=" object-cover "
+							className=" object-cover h-full w-full "
 							src={props.toShowProduct.imageUrl}
 							alt=""
 						/>
@@ -82,7 +82,7 @@ const ProductViewSimple: FC<props> = (props: any) => {
 				<h1 className="text-2xl font-bold">
 					€{props.toShowProduct.price.toFixed(2)}
 				</h1>
-				<StarRating />
+				<StarRating rating={props.toShowProduct.rating} />
 				<p className="mt-12 font-semibold text-slate-600 mb-8">
 					{props.toShowProduct.description}
 				</p>
@@ -104,6 +104,7 @@ const ProductViewSimple: FC<props> = (props: any) => {
 								modelUrl={window.location.origin + props.toShowProduct.modelUrl}
 							/>
 							<VRButton
+								product={props.toShowProduct}
 								modelUrl={window.location.origin + props.toShowProduct.modelUrl}
 							/>
 						</div>

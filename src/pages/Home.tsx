@@ -26,8 +26,9 @@ function Home() {
 				<NavigationBar />
 				<Header />
 				<HorizontalScroller products={bestSellers} title="Bestsellers" />
-				<HorizontalScroller products={latest} title="Last visited" />
-				{/* <ProductViewSimple /> */}
+				{latest.length > 0 && (
+					<HorizontalScroller products={latest} title="Last visited" />
+				)}
 			</PageLayout>
 			<Footer />
 		</div>

@@ -32,7 +32,7 @@ const HorizontalScroller: FC<props> = (props) => {
 							<h1 className="font-semibold text-sky-500 mb-2 underline">
 								{item.name}
 							</h1>
-							<StarRating className="mb-6" />
+							<StarRating rating={item.rating} className="mb-6" />
 							<h2>€{item.price}</h2>
 						</div>
 					</Link>

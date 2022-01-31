@@ -25,6 +25,7 @@ import GUI from 'lil-gui'
 import { HTMLMesh } from 'three/examples/jsm/interactive/HTMLMesh'
 // import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { InteractiveGroup } from 'three/examples/jsm/interactive/InteractiveGroup'
+import { Product } from '../entities/Product'
 //@ts-ignore
 // let scene: any = {};
 export const useVR = (() => {
@@ -81,7 +82,13 @@ export const useVR = (() => {
 		}
 	}
 
-	const initScene = (model: Object3D, overlay: HTMLDivElement) => {
+	const initScene = (
+		model: Object3D[],
+		overlay: HTMLDivElement,
+		product: Product
+	) => {
+		// overlay.classList.remove('hidden')
+		// overlay.classList.add('flex')
 		const container = document.createElement('div')
 		vrContainer = container
 		container.classList.toggle('hidden')
@@ -116,13 +123,17 @@ export const useVR = (() => {
 		x.xr.enabled = true
 		x.outputEncoding = sRGBEncoding
 		x.shadowMap.enabled = true
-
-		model.position.set(0, 0, -1)
-		model.scale.set(1, 1, 1)
-		model.name = 'model'
-		// console.log(model);
-		model.castShadow = true
-		model.receiveShadow = true
+		group = new Group()
+		sc.add(group)
+		model.forEach((x: Object3D) => {
+			group.add(x)
+			x.position.set(0, 0, 0 - 1)
+			x.scale.set(product.scale, product.scale, product.scale)
+			x.name = 'model'
+			// console.log(model);
+			x.castShadow = true
+			x.receiveShadow = true
+		})
 
 		// sc.add(model);
 		// let geo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
@@ -136,9 +147,7 @@ export const useVR = (() => {
 		// cube.position.set(0, 0, -1);
 		// cube.castShadow = true;
 		// cube.receiveShadow = true;
-		group = new Group()
-		sc.add(group)
-		group.add(model)
+
 		// group.add(model);
 
 		// Controllers
@@ -187,23 +196,23 @@ export const useVR = (() => {
 		controller2.add(line.clone())
 		raycaster = new Raycaster()
 
-		let inputs = {
-			closeButton: () => {}
-		}
-		let gui = new GUI()
-		gui.add(inputs, 'closeButton').name('Close VR session')
+		// let inputs = {
+		// 	closeButton: () => {}
+		// }
+		// let gui = new GUI()
+		// gui.add(inputs, 'closeButton').name('Close VR session')
 
-		const g = new InteractiveGroup(x, camera)
-		sc.add(g)
+		// const g = new InteractiveGroup(x, camera)
+		// sc.add(g)
 
-		menu = new HTMLMesh(gui.domElement)
-		menu.position.x = -0.75
-		menu.position.y = camera.position.y
-		menu.position.z = -0.5
-		menu.rotation.y = Math.PI / 4
-		menu.scale.setScalar(2)
+		// menu = new HTMLMesh(gui.domElement)
+		// menu.position.x = -0.75
+		// menu.position.y = camera.position.y
+		// menu.position.z = -0.5
+		// menu.rotation.y = Math.PI / 4
+		// menu.scale.setScalar(2)
 
-		g.add(menu)
+		// g.add(menu)
 
 		scene = sc
 		// div.current!.appendChild(x.domElement);
@@ -295,11 +304,11 @@ export const useVR = (() => {
 			// menu.position.set(v.x, v.y, v.z)
 			// menu.rotation.y = camera.rotation.y
 			// menu.rotation.y = 35
-			menu.lookAt(camera.position)
+			// menu.lookAt(camera.position)
 			// get directional coefficient of camera
 
 			// Set the menu in front of the camera
-			menu.position.y = camera.position.y - 0.5
+			// menu.position.y = camera.position.y - 0.5
 			// menu.position.z = camera.position.y
 
 			// moveObject();
@@ -310,8 +319,9 @@ export const useVR = (() => {
 	}
 
 	const createSessionIfSupported = (
-		model: THREE.Object3D,
-		overlay: HTMLDivElement
+		model: THREE.Object3D[],
+		overlay: HTMLDivElement,
+		product: Product
 	): Promise<THREE.WebGLRenderer> => {
 		return new Promise(async (resolve, reject) => {
 			try {
@@ -324,7 +334,7 @@ export const useVR = (() => {
 					// // Get material of the model
 					// let mat = (model as any).material
 					// let mesh = new Mesh(geom, mat)
-					const renderer = initScene(model, overlay)
+					const renderer = initScene(model, overlay, product)
 
 					resolve(renderer)
 				}

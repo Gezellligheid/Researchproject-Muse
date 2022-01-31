@@ -2,9 +2,11 @@ import React, { FC, useEffect, useRef, useState, Fragment } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { useVR } from '../util/UseVR'
 import { Dialog, Transition } from '@headlessui/react'
+import { Product } from '../entities/Product'
 
 type props = {
 	modelUrl: string
+	product: Product
 }
 
 const VRButton: FC<props> = (props: any) => {
@@ -15,7 +17,7 @@ const VRButton: FC<props> = (props: any) => {
 	const [container, setContainer] = useState<HTMLDivElement>()
 	const [renderer, setRenderer] = useState<THREE.WebGLRenderer>()
 	const [dialogOpen, setDialogOpen] = useState(false)
-
+	const [loader, setLoader] = useState(false)
 	// let overlay: any = undefined;
 	const overlay = useRef<HTMLDivElement>(null)
 	const {
@@ -41,6 +43,9 @@ const VRButton: FC<props> = (props: any) => {
 			setDialogOpen(true)
 		}
 		if (vrSupported && currentSession === undefined) {
+			setLoader(true)
+			window.scrollTo({ top: 0, behavior: 'smooth' })
+			document.body.style.overflow = 'hidden'
 			// Defining settings for the session
 			if (sessionInit.optionalFeatures === undefined) {
 				sessionInit.optionalFeatures = []
@@ -59,11 +64,16 @@ const VRButton: FC<props> = (props: any) => {
 			// Loading the 3D model
 			const loader = new GLTFLoader()
 			loader.load(props.modelUrl, (gltf) => {
-				const mesh = gltf.scene.children[0]
-				createSessionIfSupported(mesh, overlay.current!).then((renderer) => {
-					setRenderer(renderer)
-					setContainer(getVRContainer())
-				})
+				const mesh = gltf.scene.children
+				createSessionIfSupported(mesh, overlay.current!, props.product).then(
+					(renderer) => {
+						setLoader(false)
+						document.body.style.overflow = 'auto'
+						window.scrollTo({ top: 0, behavior: 'smooth' })
+						setRenderer(renderer)
+						setContainer(getVRContainer())
+					}
+				)
 				// mesh.add(gltf.scene);
 			})
 		}
@@ -80,9 +90,11 @@ const VRButton: FC<props> = (props: any) => {
 						session.removeEventListener('end', () => {})
 						setCurrentSession(undefined)
 						overlay.current!.classList.toggle('hidden')
+						overlay.current!.classList.toggle('flex')
 					})
 					renderer!.xr.setReferenceSpaceType('local')
 					overlay.current!.classList.toggle('hidden')
+					overlay.current!.classList.toggle('flex')
 
 					setOverlayShown(true)
 					setCurrentSession(session)
@@ -100,6 +112,17 @@ const VRButton: FC<props> = (props: any) => {
 	return (
 		<>
 			<div>
+				{loader && (
+					<div className="absolute z-10 top-0 left-0 bg-white h-full w-full flex items-center justify-center">
+						<div>
+							<div
+								style={{ borderTopColor: 'transparent' }}
+								className="w-12 h-12 border-4 border-sky-400 rounded-full animate-spin"
+							></div>
+						</div>
+					</div>
+				)}
+
 				<Transition appear show={dialogOpen} as={Fragment}>
 					<Dialog
 						as="div"
@@ -222,7 +245,7 @@ c-66 32 -132 99 -162 165 l-22 47 0 1050 0 1050 25 50 c43 88 135 164 225 186
 
 				<div
 					ref={overlay}
-					className="bg-slate-800 p-4 w-96 rounded-xl flex justify-end"
+					className="bg-slate-800 p-4 w-96 rounded-xl  justify-end hidden"
 				>
 					<button
 						className="text-white pointer-events-auto"

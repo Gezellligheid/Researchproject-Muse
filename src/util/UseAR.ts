@@ -1,17 +1,20 @@
 import { useState } from 'react'
 // import * as THREE from "three";
 import {
+	Euler,
 	HemisphereLight,
 	Mesh,
 	MeshBasicMaterial,
 	Object3D,
 	PerspectiveCamera,
+	Quaternion,
 	RingGeometry,
 	Scene,
 	Vector3,
 	WebGLRenderer
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { Product } from '../entities/Product'
 
 //@ts-ignore
 // let scene: any = {};
@@ -61,8 +64,6 @@ export const useAR = (() => {
 		}
 	}
 
-	const replaceModel = (model: any) => {}
-
 	const loadModel = (modelLocation: string) => {
 		const loader = new GLTFLoader()
 		return new Promise((resolve, reject) => {
@@ -73,7 +74,7 @@ export const useAR = (() => {
 		})
 	}
 
-	const initScene = (model: Object3D) => {
+	const initScene = (model: Object3D, product: Product) => {
 		const container = document.createElement('div')
 		arContainer = container
 		container.classList.toggle('hidden')
@@ -93,24 +94,66 @@ export const useAR = (() => {
 		x.setSize(window.innerWidth, window.innerHeight)
 		x.xr.enabled = true
 		// Add dragcontrols to the model
-
-		model.position.set(0, 0, -1)
-		model.scale.set(1, 1, 1)
-		model.name = 'model'
-		// console.log(model);
-
 		sc.add(model)
+
+		model.position.set(
+			0 + product.spawnOffset.x * (product.scale * 10),
+			0 + product.spawnOffset.y * (product.scale * 10),
+			0 + product.spawnOffset.z * (product.scale * 10)
+		)
+		model.scale.set(product.scale, product.scale, product.scale)
+		model.name = 'model'
+		model.updateMatrix()
+		// console.log(model);
 
 		const onSelect = () => {
 			if (reticle.visible) {
 				scene!
 					.getObjectByName('model')!
 					.position.setFromMatrixPosition(reticle.matrix)
-					.add(new Vector3(0, 0.5, 0))
+					.add(
+						new Vector3(
+							0 + product.offset.x * (product.scale * 10),
+							0 + product.offset.y * (product.scale * 10),
+							0 + product.offset.z * (product.scale * 10)
+						)
+					)
 
 				let x = scene!.getObjectByName('model')!
-				x.lookAt(camera.position)
-				x.rotateY(-(Math.PI / 2))
+
+				// rotate model to the camera via quaternion
+				// let q = new Euler(
+				// 	0 + product.rotationOffset.x * (product.scale * 10),
+				// 	0 + product.rotationOffset.y * (product.scale * 10),
+				// 	0 + product.rotationOffset.z * (product.scale * 10)
+				// )
+				// let quat = new Quaternion()
+				// quat.setFromEuler(q)
+				// x.quaternion.copy(quat)
+				// x.updateMatrix()
+				// console.log(x);
+
+				// x.lookAt(camera.position)
+
+				x.rotation.set(
+					product.rotationOffset.x,
+					product.rotationOffset.y,
+					product.rotationOffset.z
+				)
+
+				// Rotate the model to the camera via quaternion and include the rotationOffset and offset
+				// let q = new Euler(
+				// 	0 + product.rotationOffset.x * (product.scale * 10),
+				// 	0 + product.rotationOffset.y * (product.scale * 10),
+				// 	0 + product.rotationOffset.z * (product.scale * 10)
+				// )
+				// let quat = new Quaternion()
+				// quat.setFromEuler(q)
+				// x.quaternion.copy(quat)
+				// x.updateMatrix()
+				// console.log(x);
+
+				// x.rotateY(-(Math.PI / 2))
 				x.updateMatrixWorld()
 				x.updateMatrix()
 			}
@@ -186,14 +229,15 @@ export const useAR = (() => {
 	}
 
 	const createSessionIfSupported = (
-		model: THREE.Object3D
+		model: THREE.Object3D,
+		product: Product
 	): Promise<THREE.WebGLRenderer> => {
 		return new Promise(async (resolve, reject) => {
 			try {
 				clearChildren()
 				let supported = await isARSupported()
 				if (supported) {
-					const renderer = initScene(model)
+					const renderer = initScene(model, product)
 					resolve(renderer)
 				}
 			} catch (e) {

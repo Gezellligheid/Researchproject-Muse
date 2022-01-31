@@ -20,6 +20,8 @@ const ARButton: FC<props> = (props: any) => {
 	const [container, setContainer] = useState<HTMLDivElement>()
 	const [renderer, setRenderer] = useState<THREE.WebGLRenderer>()
 	const [dialogOpen, setDialogOpen] = useState(false)
+	const [loader, setLoader] = useState(false)
+
 	const {
 		isEmpty,
 		totalUniqueItems,
@@ -53,6 +55,9 @@ const ARButton: FC<props> = (props: any) => {
 			setDialogOpen(true)
 		}
 		if (arSupported && currentSession === undefined) {
+			setLoader(true)
+			window.scrollTo({ top: 0, behavior: 'smooth' })
+			document.body.style.overflow = 'hidden'
 			// Defining settings for the session
 			if (sessionInit.optionalFeatures === undefined) {
 				sessionInit.optionalFeatures = []
@@ -70,7 +75,10 @@ const ARButton: FC<props> = (props: any) => {
 				const mesh = gltf.scene.children[0]
 				console.log(gltf.scene.children[0])
 
-				createSessionIfSupported(mesh).then((renderer) => {
+				createSessionIfSupported(mesh, props.product).then((renderer) => {
+					setLoader(false)
+					window.scrollTo({ top: 0, behavior: 'smooth' })
+					document.body.style.overflow = 'auto'
 					setRenderer(renderer)
 					setContainer(getARContainer())
 				})
@@ -122,6 +130,16 @@ const ARButton: FC<props> = (props: any) => {
 
 	return (
 		<>
+			{loader && (
+				<div className="absolute z-10 top-0 left-0 bg-white h-full w-full flex items-center justify-center">
+					<div>
+						<div
+							style={{ borderTopColor: 'transparent' }}
+							className="w-12 h-12 border-4 border-sky-400 rounded-full animate-spin"
+						></div>
+					</div>
+				</div>
+			)}
 			<Transition appear show={dialogOpen} as={Fragment}>
 				<Dialog
 					as="div"
